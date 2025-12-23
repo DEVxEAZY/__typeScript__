@@ -1,7 +1,7 @@
 {
   "name": "__basic__",
   "type": "module",
-  "main": "buld/index.js",
+  "main": "build/index.js",
   "scripts": {
     "build": "tsc",
     "dev"  : "tsx src/index.ts",

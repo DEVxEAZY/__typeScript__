@@ -19,3 +19,13 @@
 - `function showInfo(date: Date, options: ShowInfoOptions = {}) { ... }`: o primeiro parâmetro (`date`) continua obrigatório; o segundo fica opcional graças ao valor padrão `{}`.
 - Erro mostrado na IDE: “1-2 argumentos eram esperados, mas 0 foram obtidos.” surge porque `date` não foi fornecido. Chame como `showInfo(new Date())` ou `showInfo(new Date(), { displayDay: true, displayMonth: true, displayYear: false })`.
 - Se quiser permitir chamada sem `date`, defina um default (`date = new Date()`). Se quiser defaults para as opções, inicialize-os no próprio parâmetro ou dentro da função.
+
+### Scripts do projeto (`package.json`)
+- `npm run dev`: executa `tsx src/index.ts` para rodar direto em TS durante o desenvolvimento.
+- `npm run build`: executa `tsc`, gerando saída em `build/` (conforme `tsconfig`).
+- `npm start`: roda `node .`, utilizando o `main` configurado no `package.json` (aponta para o build gerado).
+
+### Layout atual do código (`src/`)
+- `index.ts`: ponto de entrada simples (ex.: `console.log("Hello World")`).
+- `typescript.ts`: exemplo com a interface `ShowInfoOptions` e a função `showInfo` ilustrando parâmetros opcionais e default.
+- `javascript.js`: versão equivalente em JS puro chamando `showInfo(new Date(), {})`.

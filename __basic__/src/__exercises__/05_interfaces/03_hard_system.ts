@@ -1,5 +1,6 @@
 // ╔══════════════════════════════════════════════════════════════════════╗
-// ║ EXERCÍCIO 3: DIFÍCIL (Classes, Implements e Index Signatures)       ║
+// ║ OBRIGATÓRIO: LER O CONTEXTO ANTES DE COMEÇAR O EXERCÍCIO             ║
+// ║ EXERCÍCIO 3: DIFÍCIL (Classes, Implements e Index Signatures)        ║
 // ╚══════════════════════════════════════════════════════════════════════╝
 
 /*
@@ -30,7 +31,6 @@
 
 // --- DIGITE SEU CÓDIGO ABAIXO ---
 
-
 import * as readline from 'node:readline/promises';
 import {stdin as input, stdout as output} from 'node:process';
 import { notStrictEqual } from 'node:assert';
@@ -58,21 +58,40 @@ interface LibraryAction {
 }
 
 class Library {
+
    books: Book[] = [];
    users: User[] = [];
 
-   async createNewUser(): Promise<User> {
-      const userName = await rl.question("Insira o nome do novo usuário: ");
-      
+   async createNewUser(verbose: boolean = false): Promise<User> {
+      let userName = ""; // Declaramos aqui fora para o TypeScript não reclamar depois
+   
+      while (true) {
+         userName = await rl.question("Insira o nome de usuário: ");
+         // O sinal de '+' tenta converter a string em número. 
+         // Se der 'NaN' (Not a Number), o isNaN vira 'true' e sai do loop.
+         if (userName.length > 0 && isNaN(+userName)) {
+            break;
+         }
+   
+         console.log("Erro: O nome não pode ser composto apenas por números.");
+      }
+
       const newUser: User = {
-         id: Math.floor(100000 + Math.random() * 900000),
+         id : Math.floor(100000 + Math.random() * 900000),
          name: userName,
          createdAt: new Date(),
          borrowedBooks: []
-      };
+      }
 
-      this.addUser(newUser);
-      return newUser;
+      if (verbose == true){
+         console.log(`Usuário ${newUser.name} criado co  sucesso, ID: ${newUser.id}`)
+         this.addUser(newUser);
+         return newUser
+      }
+      else{
+         this.addUser(newUser);
+         return newUser
+      }
    }
 
    async removeUser(): Promise<User[] | undefined> {
@@ -146,8 +165,113 @@ class Library {
       console.log(`Livro "${book?.title}" não pertecende aos registros da biblicoteca`);
       return undefined;
    }
-      
+}
+
+const biblicotecaPC = new Library();
+
+
+const optionMenu: {number: 1, option: "Cadastrar Livro"} | {number: 2, option: "Cadastrar Usuário"} | {number: 3, option: "Emprestar Livro"} | {number: 4, option: "Devolver Livro"} | {number: 5, option: "Sair"} = {
+   number: 1,
+   option: "Cadastrar Livro"
+}
+
+
+console.clear();
+console.log(`
+╔════════════════════════════════════════════════════════════════╗
+║                BEM-VINDO À ADMINISTRAÇÃO DA                    ║
+║                           BIBLIOTECA                           ║
+╠════════════════════════════════════════════════════════════════╣
+║ Aqui você pode gerenciar seu estoque de livros, acompanhar     ║
+║ os empréstimos e controlar as devoluções de forma fácil e      ║
+║ organizada!                                                    ║
+╚════════════════════════════════════════════════════════════════╝
+`);
+
+
+// TODO: Definição das opções do menu como uma constante literal (read-only).
+// O 'as const' informa ao TypeScript que os valores de 'id' são fixos (1, 2, 3, 4, 5), não apenas 'number'.
+const menuOptions = [
+   {id: 1, option: "Cadastrar Livro"},
+   {id: 2, option: "Cadastrar Usuário"},
+   {id: 3, option: "Emprestar Livro"},
+   {id: 4, option: "Devolver Livro"},
+   {id: 5, option: "Sair"},   
+] as const;
+
+// Relaciona os IDs do array acima com um tipo. Se adicionarmos o ID 6 no array, MenuID atualizará automaticamente.
+type MenuID = typeof menuOptions[number]["id"];
+
+// Loop principal do sistema para manter o programa rodando até que a opção 'Sair' seja escolhida.
+while (true){
+
+   // Transforma o array de objetos em uma string formatada para exibição no terminal.
+   const menuText = menuOptions.map(opt => `${opt.id} - ${opt.option}`).join("\n    ");
+
+   // Captura a entrada do usuário. O 'await' é necessário pois rl.question é assíncrona.
+   const input = await rl.question(`\n Selecione uma opção:\n ${menuText}\n   `);
+   
+   // Converte a string digitada para número e faz o "casting" para MenuID para habilitar o IntelliSense no switch.
+   const choice = Number(input) as MenuID;
+
+   switch (choice) {
+      case 1:
+         // Coleta dados para criar um objeto que satisfaça a interface 'Book' (definida na linha 41).
+         console.log("\n--- Cadastro de Livro ---");
+         const isbn = await rl.question("ISBN: ");
+         const title = await rl.question("Título: ");
+         const author = await rl.question("Autor: ");
+         const qtd = Number(await rl.question("Quantidade: "));
+         
+         // Chama o método 'addBook' da classe Library (linha 126).
+         biblicotecaPC.addBook({
+            isbn, 
+            title, 
+            author, 
+            qtd, 
+            status: "available"
+         });
+         break;
+
+      case 2:
+         // Chama o método assíncrono 'createNewUser' da classe Library (linha 65).
+         console.log("\n--- Cadastro de Usuário ---");
+         await biblicotecaPC.createNewUser(true);
+         break;
+
+      case 3:
+         // Coleta informações para realizar o empréstimo vinculando um Livro a um Usuário.
+         console.log("\n--- Empréstimo de Livro ---");
+         const isbnBorrow = await rl.question("ISBN do livro: ");
+         const userIdBorrow = Number(await rl.question("ID do usuário: "));
+         // Chama o método 'borrowByIsbn' (linha 132) que gerencia a lógica de disponibilidade.
+         biblicotecaPC.borrowByIsbn(isbnBorrow, userIdBorrow);
+         break;
+
+      case 4:
+         // Coleta informações para devolver um livro e atualizar o status para 'available'.
+         console.log("\n--- Devolução de Livro ---");
+         const isbnReturn = await rl.question("ISBN do livro: ");
+         const userIdReturn = Number(await rl.question("ID do usuário: "));
+         // Chama o método 'returnBookIsbn' (linha 148) que remove o livro da lista do usuário.
+         biblicotecaPC.returnBookIsbn(isbnReturn, userIdReturn);
+         break;
+
+      case 5:
+         // Finaliza o processo do Node.js.
+         console.log("Tchau!");
+         process.exit();
+
+      default:
+         // Caso o usuário digite algo fora do esperado (como '9' ou letras).
+         console.log("Opção inválida!");
+         break;
    }
+}
+   
+      
+
+
 
 
 

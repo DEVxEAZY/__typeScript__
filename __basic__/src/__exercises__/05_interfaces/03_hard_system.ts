@@ -268,22 +268,6 @@ while (true){
          break;
    }
 }
-   
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // --- RESULTADO ESPERADO ---

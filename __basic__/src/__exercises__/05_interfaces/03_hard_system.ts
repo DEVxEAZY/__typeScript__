@@ -98,6 +98,53 @@ class Library {
       const getUserId = await rl.question("Informe o ID do usuário que você deseja remover: ");
       const userId = Number(getUserId); 
 
+      // ═══════════════════════════════════════════════════════════════════════
+      // EXPLICAÇÃO DETALHADA: Arrow Function como Callback
+      // ═══════════════════════════════════════════════════════════════════════
+      // 
+      // O método .find() percorre o array 'this.users' e procura o primeiro
+      // elemento que satisfaça a condição retornada pela função callback.
+      //
+      // SINTAXE: array.find(callback)
+      // 
+      // A expressão "(u => u.id === userId)" é uma ARROW FUNCTION que funciona assim:
+      //
+      // 1. 'u' é o PARÂMETRO da função (cada elemento do array)
+      //    - O método .find() passa automaticamente cada usuário do array para 'u'
+      //    - É como se fosse: for (let u of this.users) { ... }
+      //
+      // 2. '=>' é o operador ARROW FUNCTION (seta)
+      //    - Separa os parâmetros do corpo da função
+      //    - Equivale a: function(u) { return ... }
+      //
+      // 3. 'u.id === userId' é o CORPO da função (o que será retornado)
+      //    - Como não há chaves {}, o resultado dessa expressão é RETORNADO automaticamente
+      //    - Retorna true se o id do usuário for igual ao userId procurado
+      //    - Retorna false caso contrário
+      //
+      // FORMAS EQUIVALENTES DE ESCREVER:
+      //
+      // Forma 1 (atual - mais concisa):
+      //    this.users.find(u => u.id === userId)
+      //
+      // Forma 2 (com chaves e return explícito):
+      //    this.users.find(u => { return u.id === userId; })
+      //
+      // Forma 3 (função tradicional):
+      //    this.users.find(function(u) { return u.id === userId; })
+      //
+      // Forma 4 (função nomeada separada):
+      //    const buscarUsuario = (u: User) => u.id === userId;
+      //    this.users.find(buscarUsuario)
+      //
+      // COMO FUNCIONA:
+      //    - .find() testa cada elemento do array
+      //    - Para cada 'u' (usuário), executa: u.id === userId
+      //    - Se retornar true, .find() para e retorna esse elemento
+      //    - Se retornar false, continua procurando
+      //    - Se nenhum elemento satisfizer, retorna undefined
+      //
+      // ═══════════════════════════════════════════════════════════════════════
       const user = this.users.find(u => u.id === userId);
 
       if (!user) {
@@ -109,6 +156,10 @@ class Library {
       const confirmation = await rl.question("Deseja prosseguir com a exclusão [y]/[n] ? ");
 
       if (confirmation.toLowerCase() === "y") {
+         // .filter() também usa arrow function como callback
+         // Retorna um NOVO array com todos os elementos onde a condição é TRUE
+         // Neste caso: mantém todos os usuários EXCETO o que tem o id igual a userId
+         // (u => u.id !== userId) significa: "manter usuário se seu id NÃO for igual ao userId"
          this.users = this.users.filter(u => u.id !== userId);
          console.log(`Usuário ${user.name} excluído com sucesso.`);
          return this.users;
@@ -130,7 +181,10 @@ class Library {
 
    // Usando o tipo indexado Book["isbn"] como discutimos!
    borrowByIsbn(isbn: Book["isbn"], userId: User["id"]): Book | undefined {
+      // Mais exemplos de arrow functions como callbacks:
+      // 'b' representa cada livro do array this.books
       const book = this.books.find(b => b.isbn === isbn);
+      // 'u' representa cada usuário do array this.users
       const user = this.users.find(u => u.id === userId);
       if (book && book.status === "available" && user) {
          user.borrowedBooks.push({...book, borrowedAt: new Date()})

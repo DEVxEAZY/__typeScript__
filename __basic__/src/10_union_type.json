@@ -1,0 +1,16 @@
+{
+    "name": "John",
+    "age": 30,
+    "isStudent": false,
+    "hobbies": ["reading", "sports", "music"],
+    "scores": [98, 87, 75],
+    "person": ["Alice", 25],
+    "favoriteColor": "green",
+    "randomValue": "Can be any type",
+    "greet": "Hello, John",
+    "throwError": "Error: This is a test error",
+    "user": {
+        "name": "Bob",
+        "age": 22
+    }
+}   

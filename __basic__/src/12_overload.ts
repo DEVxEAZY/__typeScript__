@@ -83,7 +83,7 @@ const fail = apiResponse("error", "Algo falhou.");  // Tipado como ErrorResponse
 // 3. Receba um array de strings e retorne uma única string concatenada por vírgulas
 // ---------------------------------------------------------
 
-/*
+
 function format(value: number): string;
 function format(value: string): string;
 function format(value: string[]): string;
@@ -91,6 +91,8 @@ function format(value: any): string {
     // Implemente a lógica aqui usando typeof ou Array.isArray()
     return "";
 }
+
+/*
 
 // Exemplos para teste:
 // console.log(format(1500.5));      // "R$ 1500,50"
